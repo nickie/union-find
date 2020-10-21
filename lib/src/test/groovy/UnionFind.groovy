@@ -1,6 +1,7 @@
 package union_find
 
 import spock.lang.Specification
+import spock.lang.Timeout
 
 class UnionFindTest extends Specification {
 
@@ -60,5 +61,22 @@ class UnionFindTest extends Specification {
     uf.find(0) == uf.find(1)
     uf.find(0) == uf.find(2)
     uf.find(0) == uf.find(3)
+  }
+}
+
+class UnionFindPerformanceTest extends Specification {
+  static final E = 16
+  static final N = 1 << E
+
+  def uf = new UnionFind(N)
+
+  @Timeout(1)
+  def "performance test, linear"() {
+    when:
+    for (int i = 1 ; i < N; ++i)
+      uf.union(i-1, i)
+
+    then:
+    (1..N-1).every({ i -> uf.find(i) == uf.find(0) })
   }
 }
