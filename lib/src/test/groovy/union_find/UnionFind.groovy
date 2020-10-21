@@ -65,7 +65,7 @@ class UnionFindTest extends Specification {
 }
 
 class UnionFindPerformanceTest extends Specification {
-  static final E = 16
+  static final E = 20
   static final N = 1 << E
 
   def uf = new UnionFind(N)
@@ -75,6 +75,17 @@ class UnionFindPerformanceTest extends Specification {
     when:
     for (int i = 1 ; i < N; ++i)
       uf.union(i-1, i)
+
+    then:
+    (1..N-1).every({ i -> uf.find(i) == uf.find(0) })
+  }
+
+  @Timeout(1)
+  def "performance test, balanced"() {
+    when:
+    for (int p = 0; p < E; ++p)
+      for (int i = 0; i < N; i += (2 << p))
+        uf.union(i, i + (1 << p))
 
     then:
     (1..N-1).every({ i -> uf.find(i) == uf.find(0) })
